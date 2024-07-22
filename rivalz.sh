@@ -1,12 +1,8 @@
 #!/bin/bash
 
-# Function to handle command failures
-handle_error() {
-  if [ $? -ne 0 ]; then
-    echo "Error: $1"
-    exit 1
-  fi
-}
+# Jeck — Meowgiwara
+# X: https://x.com/mntnjck
+# Medium: https://medium.com/@meowgiwara
 
 # Check if the script is being run with root privileges
 if [ "$EUID" -ne 0 ]; then
@@ -16,15 +12,85 @@ fi
 
 # Check for required parameters
 if [ $# -ne 4 ]; then
-    echo "Usage: $0 <username> <password> <ssh_port> <rdp_port>"
+    echo -e "
+    Usage:\n\
+    - $0 <username> <password> <ssh_port> <rdp_port>\n\
+    \n\
+    Replace:\n\
+    - <username>\n\
+    - <password>\n\
+    - <ssh_port>, and\n\
+    - <rdp_port> base on your preferences.\n\
+    "
     exit 1
 fi
+
+# Function to handle command failures
+handle_error() {
+  if [ $? -ne 0 ]; then
+    echo "Error: $1"
+    exit 1
+  fi
+}
+
+# Function to validate SSH port
+validate_ssh_port() {
+  local port=$1
+  local common_ports=(22 2222 80 443 8080 8443)
+  
+  if [[ ! "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1024 ] || [ "$port" -gt 65535 ]; then
+    echo "Error: SSH port must be a number between 1024 and 65535."
+    exit 1
+  fi
+  
+  for common_port in "${common_ports[@]}"; do
+    if [ "$port" -eq "$common_port" ]; then
+      echo "Error: SSH port $port is a common/less secure port. Please choose a different port between 1024 and 65535."
+      exit 1
+    fi
+  done
+}
+
+# Function to validate RDP port
+validate_rdp_port() {
+  local port=$1
+  local common_ports=(3389 3388 3390 80 443 8080 8443)
+  
+  if [[ ! "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1024 ] || [ "$port" -gt 65535 ]; then
+    echo "Error: RDP port must be a number between 1024 and 65535."
+    exit 1
+  fi
+  
+  for common_port in "${common_ports[@]}"; do
+    if [ "$port" -eq "$common_port" ]; then
+      echo "Error: RDP port $port is a common/less secure port. Please choose a different port between 1024 and 65535."
+      exit 1
+    fi
+  done
+}
+
+# Function to validate SSH and RDP ports are different
+validate_ports_different() {
+  if [ "$1" -eq "$2" ]; then
+    echo "Error: SSH port and RDP port cannot be the same. Please choose different ports."
+    exit 1
+  fi
+}
 
 # Define user, password, SSH port, and RDP port variables from script parameters
 NEW_USER=$1
 NEW_PASSWORD=$2
 NEW_SSH_PORT=$3
 NEW_RDP_PORT=$4
+
+# Validate SSH and RDP ports are different
+validate_ports_different "$NEW_SSH_PORT" "$NEW_RDP_PORT"
+
+# Validate SSH port
+validate_ssh_port "$NEW_SSH_PORT"
+
+# Validate RDP port
+validate_rdp_port "$NEW_RDP_PORT"
 
 # Check if the user already exists
 if id "$NEW_USER" &>/dev/null; then
