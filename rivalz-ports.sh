@@ -213,6 +213,10 @@ sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' $SSH_CONFIG
 # Reload SSH service
 systemctl reload sshd
 
+# Clear command history
+history -w
+history -c
+
 # Print the message important note
 echo -e "
 #################################################\n\

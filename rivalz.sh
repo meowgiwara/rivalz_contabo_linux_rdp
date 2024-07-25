@@ -169,6 +169,10 @@ handle_error "Failed to configure network interface."
 # Reload SSH service
 systemctl reload sshd
 
+# Clear command history
+history -w
+history -c
+
 # Print the message important note
 message success "\n\
 #################################################\n\
@@ -180,5 +184,4 @@ Components installed/started/dowloaded:\n\
 - Rivalz.ai rClient\n\
 - Firefox\n\
 - Network configuration service\n\
-- Firewall configuration\n\
 "
