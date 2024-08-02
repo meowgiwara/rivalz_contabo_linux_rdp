@@ -48,7 +48,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Check for required parameters
-if [ $# -ne 4 ]; then
+if [ $# -ne 2 ]; then
     echo -e "
     Usage:\n\
     - $0 <username> <password>\n\
